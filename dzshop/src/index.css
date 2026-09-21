@@ -1,0 +1,85 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;500;600&display=swap');
+
+:root {
+  --brand-dark: #0F3D3E;
+  --brand-dark-deep: #0A2C2D;
+  --brand-accent: #E8743B;
+  --brand-accent-dark: #C85F2C;
+  --brand-bg: #FAF8F5;
+  --brand-ink: #142221;
+
+  /* Override Bootstrap's own primary color variables
+     so any default btn-primary / bg-primary / text-primary
+     across the whole project uses the brand color instead of blue */
+  --bs-primary: var(--brand-dark);
+  --bs-primary-rgb: 15, 61, 62;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  color: var(--brand-ink);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Poppins', sans-serif;
+}
+
+/* Default Bootstrap blue buttons -> brand dark green */
+.btn-primary {
+  background-color: var(--brand-dark);
+  border-color: var(--brand-dark);
+}
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary:active {
+  background-color: var(--brand-dark-deep) !important;
+  border-color: var(--brand-dark-deep) !important;
+}
+
+/* Default Bootstrap blue outline buttons -> brand dark green */
+.btn-outline-primary {
+  color: var(--brand-dark);
+  border-color: var(--brand-dark);
+}
+.btn-outline-primary:hover,
+.btn-outline-primary:focus {
+  background-color: var(--brand-dark);
+  border-color: var(--brand-dark);
+  color: #fff;
+}
+
+/* Accent (call-to-action) button, used for main actions like "Voir les produits" */
+.btn-accent {
+  background-color: var(--brand-accent);
+  border: none;
+  color: #fff;
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+.btn-accent:hover,
+.btn-accent:focus {
+  background-color: var(--brand-accent-dark);
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+/* Links and focus rings that default to Bootstrap blue */
+a {
+  color: var(--brand-dark);
+}
+a:hover {
+  color: var(--brand-accent);
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--brand-accent);
+  box-shadow: 0 0 0 0.2rem rgba(232, 116, 59, 0.15);
+}
+
+.bg-primary {
+  background-color: var(--brand-dark) !important;
+}
+.text-primary {
+  color: var(--brand-dark) !important;
+}

@@ -1,7 +1,7 @@
-
 import { useParams, Link } from 'react-router-dom'
 import { useContext, useState } from 'react'
-import { products } from '../data/products'
+import { useApi } from '../hooks/useApi'
+import Chargement from '../components/Chargement'
 import { CartContext } from '../context/CartContext'
 
 function ProductDetailPage() {
@@ -12,11 +12,14 @@ function ProductDetailPage() {
 
   const [ajoute, setAjoute] = useState(false)
 
-  const produit = products.find(function(p) {
-    return p.id === Number(id)
-  })
+  // Le produit vient maintenant de l'API (plus du fichier data/products.js)
+  const { data: produit, chargement, erreur } = useApi('/products/' + id)
 
-  if (!produit) {
+  if (chargement) {
+    return <Chargement />
+  }
+
+  if (erreur || !produit) {
     return (
       <p className="container py-5">
         Produit introuvable
@@ -41,7 +44,7 @@ function ProductDetailPage() {
 
       <div className="row">
 
-      
+
         <div className="col-md-6 text-center">
           <img
             src={produit.image}
@@ -56,7 +59,7 @@ function ProductDetailPage() {
           />
         </div>
 
-        
+
         <div className="col-md-6">
 
           <h1>
@@ -96,6 +99,7 @@ function ProductDetailPage() {
           <button
             className="btn btn-primary btn-lg"
             onClick={ajouterAuPanier}
+            disabled={produit.stock === 0}
           >
             🛒 Ajouter au panier
           </button>

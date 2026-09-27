@@ -59,6 +59,17 @@ export function AuthProvider({ children }) {
     }
   }
 
+  // Connexion avec Google : on envoie à l'API le jeton reçu de Google, elle le fait vérifier
+  async function loginGoogle(credential) {
+    try {
+      const reponse = await api.post('/auth/google', { credential: credential })
+      sauvegarder(reponse.data)
+      return reponse.data.user
+    } catch (erreur) {
+      throw new Error(messageErreur(erreur))
+    }
+  }
+
   async function register(nom, email, password) {
     try {
       const reponse = await api.post('/auth/register', { nom: nom, email: email, password: password })
@@ -74,6 +85,7 @@ export function AuthProvider({ children }) {
       value={{
         user,
         login,
+        loginGoogle,
         register,
         logout
       }}

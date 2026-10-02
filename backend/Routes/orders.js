@@ -3,6 +3,7 @@ import mongoose from 'mongoose'
 import Order from '../Models/orderModel.js'
 import Product from '../Models/productModel.js'
 import authMiddleware from '../Middlware/authMiddleware.js'
+import wilayas from '../data/wilayas.js'
 
 const router = express.Router()
 
@@ -20,6 +21,15 @@ router.post('/', authMiddleware, async function (req, res) {
     if (!telephone || !wilaya || !adresse) {
       return res.status(400).json({ message: 'Téléphone, wilaya et adresse obligatoires' })
     }
+    const wilayaChoisie = wilayas.find(function (w) {
+  return w.code === String(wilaya).trim()
+})
+
+if (!wilayaChoisie) {
+  return res.status(400).json({
+    message: 'Wilaya invalide'
+  })
+}
 
     // Le navigateur envoie SEULEMENT { produit: _id, quantite }.
     // Les PRIX, on va les chercher NOUS-MÊMES dans la base : on ne fait jamais
@@ -65,7 +75,7 @@ router.post('/', authMiddleware, async function (req, res) {
       livraison: livraison,
       total: sousTotal + livraison,
       telephone: telephone,
-      wilaya: wilaya,
+       wilaya: wilayaChoisie.nom,
       commune: commune,
       adresse: adresse,
     })

@@ -1,9 +1,19 @@
-import { createContext, useState } from 'react'
+import { createContext, useState,useEffect } from 'react'
 
 export const CartContext = createContext()
 
 export function CartProvider({ children }) {
-  const [panier, setPanier] = useState([])
+  const [panier, setPanier] = useState(function() {
+    const panierLocalStorage = localStorage.getItem('panier')
+    if (panierLocalStorage) {
+      return JSON.parse(panierLocalStorage)
+    }
+    return []
+  })
+
+  useEffect(function() {
+    localStorage.setItem('panier', JSON.stringify(panier))
+  }, [panier])
 
   function addToCart(produit) {
     setPanier(function (anciens) {

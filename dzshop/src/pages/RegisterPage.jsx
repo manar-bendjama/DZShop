@@ -1,4 +1,3 @@
-
 import { useState, useContext } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { AuthContext } from '../context/AuthContext'
@@ -9,11 +8,13 @@ function RegisterPage() {
   const [mdp, setMdp] = useState('')
   const [confirmation, setConfirmation] = useState('')
   const [erreur, setErreur] = useState('')
+  const [envoi, setEnvoi] = useState(false)
   const { register } = useContext(AuthContext)
   const navigate = useNavigate()
 
-  function envoyer(e) {
+  async function envoyer(e) {
     e.preventDefault()
+    setErreur('')
 
     // Les vérifications (validations)
     if (mdp.length < 6) {
@@ -26,8 +27,14 @@ function RegisterPage() {
       return
     }
 
-    register(nom, email)   // tout est bon
-    navigate('/')
+    setEnvoi(true)
+    try {
+      await register(nom, email, mdp)   // vrai appel à l'API (le mot de passe est envoyé au serveur)
+      navigate('/')
+    } catch (err) {
+      setErreur(err.message)
+    }
+    setEnvoi(false)
   }
 
   return (
@@ -89,8 +96,8 @@ function RegisterPage() {
           required
         />
 
-        <button className="btn btn-primary w-100">
-          Créer mon compte
+        <button className="btn btn-primary w-100" disabled={envoi}>
+          {envoi ? 'Création...' : 'Créer mon compte'}
         </button>
 
       </form>
@@ -107,4 +114,3 @@ function RegisterPage() {
 }
 
 export default RegisterPage
-

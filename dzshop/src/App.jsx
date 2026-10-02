@@ -13,6 +13,7 @@ import RegisterPage from './pages/RegisterPage'
 import CheckoutPage from './pages/CheckoutPage'
 import NotFoundPage from './pages/NotFoundPage'
 import PrivateRoute from './components/PrivateRoute'
+import MesCommandesPage from './pages/MesCommandesPage'
 
 function App() {
   return (
@@ -33,6 +34,11 @@ function App() {
             <Route path="/checkout" element={
               <PrivateRoute>
                 <CheckoutPage />
+              </PrivateRoute>
+            } />
+            <Route path="/mes-commandes" element={
+              <PrivateRoute>
+                <MesCommandesPage />
               </PrivateRoute>
             } />
 

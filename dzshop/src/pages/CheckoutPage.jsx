@@ -1,25 +1,60 @@
-
 import { useState, useContext } from 'react'
 import { Link } from 'react-router-dom'
 import { CartContext } from '../context/CartContext'
+import { AuthContext } from '../context/AuthContext'
+import api from '../api/axios'
 
 function CheckoutPage() {
   const { total, livraison, clearCart, panier } = useContext(CartContext)
-  const [valide, setValide] = useState(false)
+  const { user } = useContext(AuthContext)
 
-  function commander(e) {
+  const [nom, setNom] = useState(user ? user.nom : '')
+  const [telephone, setTelephone] = useState('')
+  const [wilaya, setWilaya] = useState('')
+  const [commune, setCommune] = useState('')
+  const [adresse, setAdresse] = useState('')
+  const [erreur, setErreur] = useState('')
+  const [envoi, setEnvoi] = useState(false)
+  const [commande, setCommande] = useState(null)   // la commande créée par le serveur
+
+  async function commander(e) {
     e.preventDefault()
-    clearCart()
-    setValide(true)
+    setErreur('')
+    setEnvoi(true)
+
+    try {
+      // On envoie SEULEMENT quel produit et combien : le SERVEUR retrouve les vrais prix
+      const reponse = await api.post('/orders', {
+        articles: panier.map(function (ligne) {
+          return { produit: ligne._id, quantite: ligne.qte }
+        }),
+        client: nom,
+        telephone: telephone,
+        wilaya: wilaya,
+        commune: commune,
+        adresse: adresse,
+      })
+      setCommande(reponse.data)
+      clearCart()
+    } catch (err) {
+      if (err.response && err.response.data && err.response.data.message) {
+        setErreur(err.response.data.message)
+      } else {
+        setErreur('Serveur injoignable, réessaie dans un instant')
+      }
+    }
+    setEnvoi(false)
   }
 
   // Écran de confirmation (après la commande)
-  if (valide) {
+  if (commande) {
     return (
       <div className="container py-5 text-center">
         <div className="display-1">✅</div>
         <h1>Commande confirmée !</h1>
-        <p className="text-muted">Merci Ali, vous serez livré sous 48h.</p>
+        <p className="text-muted">
+          Merci {nom}, vous serez livré sous 48h. Total : <b>{commande.total.toLocaleString('fr-DZ')} DZD</b>
+        </p>
         <Link className="btn btn-primary" to="/products">
           Continuer mes achats
         </Link>
@@ -44,34 +79,45 @@ function CheckoutPage() {
     <div className="container py-5" style={{ maxWidth: '500px' }}>
       <h1 className="mb-4">Livraison</h1>
 
+      {erreur && <div className="alert alert-danger">{erreur}</div>}
+
       <form onSubmit={commander}>
         <input
           className="form-control mb-3"
           placeholder="Nom complet"
+          value={nom}
+          onChange={function (e) { setNom(e.target.value) }}
           required
         />
 
         <input
           className="form-control mb-3"
           placeholder="Téléphone"
+          value={telephone}
+          onChange={function (e) { setTelephone(e.target.value) }}
           required
         />
 
         <input
           className="form-control mb-3"
           placeholder="Wilaya (ex : Skikda)"
+          value={wilaya}
+          onChange={function (e) { setWilaya(e.target.value) }}
           required
         />
 
         <input
           className="form-control mb-3"
           placeholder="Commune"
-          required
+          value={commune}
+          onChange={function (e) { setCommune(e.target.value) }}
         />
 
         <textarea
           className="form-control mb-3"
           placeholder="Adresse détaillée"
+          value={adresse}
+          onChange={function (e) { setAdresse(e.target.value) }}
           required
         ></textarea>
 
@@ -98,9 +144,10 @@ function CheckoutPage() {
             </span>
           </li>
         </ul>
+        <p className="text-muted small">Le total final est recalculé par le serveur.</p>
 
-        <button className="btn btn-success btn-lg w-100">
-          Confirmer la commande
+        <button className="btn btn-success btn-lg w-100" disabled={envoi}>
+          {envoi ? 'Envoi en cours...' : 'Confirmer la commande'}
         </button>
       </form>
     </div>
@@ -108,4 +155,3 @@ function CheckoutPage() {
 }
 
 export default CheckoutPage
-

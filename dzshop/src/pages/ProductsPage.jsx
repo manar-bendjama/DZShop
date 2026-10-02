@@ -1,12 +1,17 @@
 import { useState } from 'react'
+import { useApi } from '../hooks/useApi'
+import Chargement from '../components/Chargement'
 import { Container, Row, Col, Form } from 'react-bootstrap'
-import { products } from '../data/products'
 import ProductCard from '../components/ProductCard'
 
 function ProductsPage() {
   const [recherche, setRecherche] = useState('')
   const [categorie, setCategorie] = useState('')
   const [tri, setTri] = useState('')
+
+  // Les produits viennent maintenant de l'API (plus du fichier data/products.js)
+  const { data, chargement, erreur } = useApi('/products')
+  const products = data || []
 
   const categories = [
     ...new Set(
@@ -98,7 +103,12 @@ function ProductsPage() {
 
       <Container className="py-5">
 
-        {/* Filtres */}
+        {chargement && <Chargement />}
+        {erreur && <p className="text-center text-danger">Impossible de charger les produits.</p>}
+
+        {/* Filtres et résultats : seulement une fois les produits chargés */}
+        {!chargement && !erreur && (
+        <>
         <Row className="filter-bar g-3 p-3 mx-0 mb-5 align-items-center">
 
           <Col md={5}>
@@ -176,7 +186,7 @@ function ProductsPage() {
               return (
                 <Col
                   md={4}
-                  key={produit.id}
+                  key={produit._id}
                 >
                   <ProductCard produit={produit} />
                 </Col>
@@ -186,6 +196,8 @@ function ProductsPage() {
           )}
 
         </Row>
+        </>
+        )}
 
       </Container>
 

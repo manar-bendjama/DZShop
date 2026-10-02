@@ -1,20 +1,29 @@
-
-import { createContext, useState } from 'react'
+import { createContext, useState,useEffect } from 'react'
 
 export const CartContext = createContext()
 
 export function CartProvider({ children }) {
-  const [panier, setPanier] = useState([])
+  const [panier, setPanier] = useState(function() {
+    const panierLocalStorage = localStorage.getItem('panier')
+    if (panierLocalStorage) {
+      return JSON.parse(panierLocalStorage)
+    }
+    return []
+  })
+
+  useEffect(function() {
+    localStorage.setItem('panier', JSON.stringify(panier))
+  }, [panier])
 
   function addToCart(produit) {
-    const existe = panier.find(function(a) {
-      return a.id === produit.id
-    })
+    setPanier(function (anciens) {
+      const existe = anciens.find(function(a) {
+        return a._id === produit._id
+      })
 
-    if (existe) {
-      setPanier(
-        panier.map(function(a) {
-          if (a.id === produit.id) {
+      if (existe) {
+        return anciens.map(function(a) {
+          if (a._id === produit._id) {
             return {
               ...a,
               qte: a.qte + 1
@@ -23,30 +32,30 @@ export function CartProvider({ children }) {
 
           return a
         })
-      )
-    } else {
-      setPanier([
-        ...panier,
+      }
+
+      return [
+        ...anciens,
         {
           ...produit,
           qte: 1
         }
-      ])
-    }
+      ]
+    })
   }
 
   function removeFromCart(id) {
-    setPanier(
-      panier.filter(function(a) {
-        return a.id !== id
+    setPanier(function (anciens) {
+      return anciens.filter(function(a) {
+        return a._id !== id
       })
-    )
+    })
   }
 
   function updateQty(id, nouvelleQte) {
-    setPanier(
-      panier.map(function(a) {
-        if (a.id === id) {
+    setPanier(function (anciens) {
+      return anciens.map(function(a) {
+        if (a._id === id) {
           return {
             ...a,
             qte: nouvelleQte
@@ -55,7 +64,7 @@ export function CartProvider({ children }) {
 
         return a
       })
-    )
+    })
   }
 
   function clearCart() {

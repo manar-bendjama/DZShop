@@ -8,7 +8,7 @@ function ProductCard({ produit }) {
 
     <img
   src={produit.image}
-  alt={produit.name}
+  alt={produit.nom}
   className="card-img-top"
   style={{ height: "220px", objectFit: "contain" }}
   />
@@ -26,7 +26,7 @@ function ProductCard({ produit }) {
 
         <Link
           className="btn btn-primary w-100"
-          to={"/product/" + produit.id}
+          to={"/product/" + produit._id}
         >
           Voir le produit
         </Link>

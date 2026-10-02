@@ -54,7 +54,7 @@ function CartPage() {
 
           {panier.map(function(a) {
             return (
-              <tr key={a.id}>
+              <tr key={a._id}>
 
                 <td>
                   {a.nom}
@@ -69,7 +69,7 @@ function CartPage() {
                   <button
                     className="btn btn-sm btn-outline-secondary"
                     onClick={function() {
-                      updateQty(a.id, a.qte - 1)
+                      updateQty(a._id, a.qte - 1)
                     }}
                     disabled={a.qte <= 1}
                   >
@@ -83,7 +83,7 @@ function CartPage() {
                   <button
                     className="btn btn-sm btn-outline-secondary"
                     onClick={function() {
-                      updateQty(a.id, a.qte + 1)
+                      updateQty(a._id, a.qte + 1)
                     }}
                   >
                     +
@@ -100,7 +100,7 @@ function CartPage() {
                   <button
                     className="btn btn-sm btn-danger"
                     onClick={function() {
-                      removeFromCart(a.id)
+                      removeFromCart(a._id)
                     }}
                   >
                     Supprimer

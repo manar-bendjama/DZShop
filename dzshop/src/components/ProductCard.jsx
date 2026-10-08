@@ -1,17 +1,19 @@
-import { Link } from 'react-router-dom'
+import { Link } from "react-router-dom";
 
 function ProductCard({ produit }) {
   return (
+    <div className="card h-100">
 
-     <div className="card h-100">
+      <img
+        src={produit.image}
+        alt={produit.nom}
+        className="card-img-top"
+        style={{
+          height: "220px",
+          objectFit: "contain",
+        }}
+      />
 
-
-    <img
-  src={produit.image}
-  alt={produit.nom}
-  className="card-img-top"
-  style={{ height: "220px", objectFit: "contain" }}
-  />
       <div className="card-body">
 
         <h5>{produit.nom}</h5>
@@ -21,7 +23,7 @@ function ProductCard({ produit }) {
         </p>
 
         <p className="fw-bold text-primary fs-5">
-          {produit.prix.toLocaleString('fr-DZ')} DZD
+          {produit.prix.toLocaleString("fr-DZ")} DZD
         </p>
 
         <Link
@@ -32,9 +34,8 @@ function ProductCard({ produit }) {
         </Link>
 
       </div>
-
     </div>
-  )
+  );
 }
 
-export default ProductCard
+export default ProductCard;

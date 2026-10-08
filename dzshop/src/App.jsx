@@ -24,11 +24,12 @@ import AdminProductsPage from './pages/AdminProductsPage'
 import AdminOrdersPage from './pages/AdminOrdersPage'
 import AdminUsersPage from './pages/AdminUsersPage'
 
+
 function App() {
   return (
+   
     <AuthProvider>
       <CartProvider>
-
         <BrowserRouter>
 
           <Navbar />
@@ -127,7 +128,7 @@ function App() {
                 }
               />
 
-              {/* إدارة المستخدمين */}
+              
               <Route
                 path="/admin/users"
                 element={
@@ -137,7 +138,7 @@ function App() {
                 }
               />
 
-              {/* أي رابط غير موجود */}
+              
               <Route
                 path="*"
                 element={<NotFoundPage />}
@@ -153,6 +154,7 @@ function App() {
 
       </CartProvider>
     </AuthProvider>
+    
   )
 }
 

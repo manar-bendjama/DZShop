@@ -11,6 +11,7 @@ export default function AdminUsersPage() {
   const [nom, setNom] = useState('')
   const [email, setEmail] = useState('')
   const [role, setRole] = useState('user')
+
   const [operationEnCours, setOperationEnCours] = useState(false)
 
   async function chargerUtilisateurs() {
@@ -19,6 +20,7 @@ export default function AdminUsersPage() {
       setErreur('')
 
       const reponse = await api.get('/auth/users')
+
       setUtilisateurs(reponse.data)
     } catch (error) {
       setErreur(
@@ -36,9 +38,10 @@ export default function AdminUsersPage() {
 
   function ouvrirModification(utilisateur) {
     setUtilisateurEnEdition(utilisateur)
-    setNom(utilisateur.nom)
-    setEmail(utilisateur.email)
-    setRole(utilisateur.role)
+    setNom(utilisateur.nom || '')
+    setEmail(utilisateur.email || '')
+    setRole(utilisateur.role || 'user')
+
     setErreur('')
     setMessage('')
   }
@@ -53,20 +56,28 @@ export default function AdminUsersPage() {
   async function modifierUtilisateur(event) {
     event.preventDefault()
 
+    if (!utilisateurEnEdition) {
+      return
+    }
+
     try {
       setOperationEnCours(true)
       setErreur('')
       setMessage('')
 
-      await api.put(`/auth/users/${utilisateurEnEdition._id}`, {
-        nom,
-        email,
-        role
-      })
+      await api.put(
+        `/auth/users/${utilisateurEnEdition._id}`,
+        {
+          nom,
+          email,
+          role
+        }
+      )
 
       setMessage('Utilisateur modifié avec succès.')
 
       fermerModification()
+
       await chargerUtilisateurs()
     } catch (error) {
       setErreur(
@@ -83,13 +94,17 @@ export default function AdminUsersPage() {
       `Voulez-vous vraiment supprimer "${utilisateur.nom}" ?`
     )
 
-    if (!confirmation) return
+    if (!confirmation) {
+      return
+    }
 
     try {
       setErreur('')
       setMessage('')
 
-      await api.delete(`/auth/users/${utilisateur._id}`)
+      await api.delete(
+        `/auth/users/${utilisateur._id}`
+      )
 
       setMessage('Utilisateur supprimé avec succès.')
 
@@ -104,223 +119,387 @@ export default function AdminUsersPage() {
 
   if (chargement) {
     return (
-      <div className="container py-5 text-center">
-        <div className="spinner-border" role="status"></div>
-        <p className="mt-3">Chargement des utilisateurs...</p>
+      <div
+        className="admin-users-page"
+        style={{
+          backgroundColor: '#FAF8F5',
+          minHeight: '100vh'
+        }}
+      >
+        <div className="container py-5 text-center">
+
+          <div
+            className="spinner-border text-primary"
+            role="status"
+          >
+            <span className="visually-hidden">
+              Chargement...
+            </span>
+          </div>
+
+          <p className="mt-3 text-muted">
+            Chargement des utilisateurs...
+          </p>
+
+        </div>
       </div>
     )
   }
 
   return (
-    <div className="container py-5">
+    <div
+      className="admin-users-page"
+      style={{
+        backgroundColor: '#FAF8F5',
+        minHeight: '100vh'
+      }}
+    >
+      <style>{`
+        .admin-users-page {
+          color: #142221;
+          font-family: 'Inter', sans-serif;
+        }
 
-      <div className="d-flex justify-content-between align-items-center mb-4">
-        <div>
-          <h1>Gestion des utilisateurs</h1>
-          <p className="text-muted mb-0">
-            Gérer les comptes utilisateurs et leurs rôles.
-          </p>
-        </div>
+        .admin-users-page h1,
+        .admin-users-page h5 {
+          font-family: 'Poppins', sans-serif;
+        }
 
-        <button
-          className="btn btn-outline-primary"
-          onClick={chargerUtilisateurs}
-        >
-          Actualiser
-        </button>
-      </div>
+        .admin-users-page .page-title {
+          color: #142221;
+          font-weight: 800;
+        }
 
-      {erreur && (
-        <div className="alert alert-danger">
-          {erreur}
-        </div>
-      )}
+        .admin-users-page .back-link {
+          color: #6c757d;
+          transition: color 0.15s ease;
+        }
 
-      {message && (
-        <div className="alert alert-success">
-          {message}
-        </div>
-      )}
+        .admin-users-page .back-link:hover {
+          color: #E8743B;
+        }
 
-      {utilisateurEnEdition && (
-        <div className="card shadow-sm mb-4">
-          <div className="card-header">
-            <h5 className="mb-0">Modifier l'utilisateur</h5>
+        .admin-users-page .admin-card {
+          border: none;
+          border-radius: 18px;
+          overflow: hidden;
+        }
+
+        .admin-users-page .form-control,
+        .admin-users-page .form-select {
+          border-radius: 10px;
+        }
+
+        .admin-users-page .form-control:focus,
+        .admin-users-page .form-select:focus {
+          border-color: #E8743B;
+          box-shadow: 0 0 0 0.2rem rgba(232, 116, 59, 0.15);
+        }
+
+        .admin-users-page .table thead th {
+          background: #0F3D3E;
+          color: #fff;
+          border: none;
+          font-weight: 600;
+          white-space: nowrap;
+        }
+
+        .admin-users-page .table tbody tr {
+          vertical-align: middle;
+        }
+      `}</style>
+
+      <div className="container py-5">
+
+        {/* Header */}
+        <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+
+          <div>
+            <a
+              href="/admin"
+              className="text-decoration-none back-link"
+            >
+              ← Retour au Dashboard
+            </a>
+
+            <h1 className="page-title mt-2 mb-1">
+              Gestion des utilisateurs
+            </h1>
+
+            <p className="text-muted mb-0">
+              Gérer les comptes utilisateurs et leurs rôles.
+            </p>
           </div>
 
-          <div className="card-body">
+          <button
+            className="btn btn-outline-primary"
+            onClick={chargerUtilisateurs}
+          >
+            ↻ Actualiser
+          </button>
 
-            <form onSubmit={modifierUtilisateur}>
+        </div>
 
-              <div className="row g-3">
+        {/* Messages */}
+        {erreur && (
+          <div className="alert alert-danger">
+            {erreur}
+          </div>
+        )}
 
-                <div className="col-md-4">
-                  <label className="form-label">
-                    Nom
-                  </label>
+        {message && (
+          <div className="alert alert-success">
+            {message}
+          </div>
+        )}
 
-                  <input
-                    type="text"
-                    className="form-control"
-                    value={nom}
-                    onChange={(event) => setNom(event.target.value)}
-                    required
-                  />
+        {/* Formulaire de modification */}
+        {utilisateurEnEdition && (
+          <div className="card admin-card shadow-sm mb-4">
+
+            <div className="card-header bg-white border-0 p-4 pb-0">
+              <h5 className="mb-0 fw-bold">
+                Modifier l'utilisateur
+              </h5>
+            </div>
+
+            <div className="card-body p-4">
+
+              <form onSubmit={modifierUtilisateur}>
+
+                <div className="row g-3">
+
+                  {/* Nom */}
+                  <div className="col-md-4">
+                    <label className="form-label fw-semibold">
+                      Nom
+                    </label>
+
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={nom}
+                      onChange={(event) =>
+                        setNom(event.target.value)
+                      }
+                      required
+                    />
+                  </div>
+
+                  {/* Email */}
+                  <div className="col-md-4">
+                    <label className="form-label fw-semibold">
+                      Email
+                    </label>
+
+                    <input
+                      type="email"
+                      className="form-control"
+                      value={email}
+                      onChange={(event) =>
+                        setEmail(event.target.value)
+                      }
+                      required
+                    />
+                  </div>
+
+                  {/* Rôle */}
+                  <div className="col-md-4">
+                    <label className="form-label fw-semibold">
+                      Rôle
+                    </label>
+
+                    <select
+                      className="form-select"
+                      value={role}
+                      onChange={(event) =>
+                        setRole(event.target.value)
+                      }
+                    >
+                      <option value="user">
+                        User
+                      </option>
+
+                      <option value="admin">
+                        Admin
+                      </option>
+                    </select>
+                  </div>
+
                 </div>
 
-                <div className="col-md-4">
-                  <label className="form-label">
-                    Email
-                  </label>
+                {/* Boutons */}
+                <div className="mt-4">
 
-                  <input
-                    type="email"
-                    className="form-control"
-                    value={email}
-                    onChange={(event) => setEmail(event.target.value)}
-                    required
-                  />
-                </div>
-
-                <div className="col-md-4">
-                  <label className="form-label">
-                    Rôle
-                  </label>
-
-                  <select
-                    className="form-select"
-                    value={role}
-                    onChange={(event) => setRole(event.target.value)}
+                  <button
+                    type="submit"
+                    className="btn btn-primary me-2"
+                    disabled={operationEnCours}
                   >
-                    <option value="user">User</option>
-                    <option value="admin">Admin</option>
-                  </select>
+                    {operationEnCours
+                      ? 'Modification...'
+                      : 'Enregistrer'}
+                  </button>
+
+                  <button
+                    type="button"
+                    className="btn btn-outline-secondary"
+                    onClick={fermerModification}
+                    disabled={operationEnCours}
+                  >
+                    Annuler
+                  </button>
+
                 </div>
 
-              </div>
+              </form>
 
-              <div className="mt-3">
-                <button
-                  type="submit"
-                  className="btn btn-primary me-2"
-                  disabled={operationEnCours}
-                >
-                  {operationEnCours
-                    ? 'Modification...'
-                    : 'Enregistrer'}
-                </button>
-
-                <button
-                  type="button"
-                  className="btn btn-secondary"
-                  onClick={fermerModification}
-                  disabled={operationEnCours}
-                >
-                  Annuler
-                </button>
-              </div>
-
-            </form>
-
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {utilisateurs.length === 0 ? (
-        <div className="alert alert-info">
-          Aucun utilisateur trouvé.
-        </div>
-      ) : (
-        <div className="card shadow-sm">
+        {/* Aucun utilisateur */}
+        {utilisateurs.length === 0 ? (
 
-          <div className="table-responsive">
+          <div className="card admin-card shadow-sm">
+            <div className="card-body text-center py-5">
 
-            <table className="table table-hover align-middle mb-0">
+              <div className="fs-1 mb-3">
+                👥
+              </div>
 
-              <thead className="table-light">
-                <tr>
-                  <th>Nom</th>
-                  <th>Email</th>
-                  <th>Provider</th>
-                  <th>Rôle</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
+              <h5 className="fw-bold">
+                Aucun utilisateur
+              </h5>
 
-              <tbody>
+              <p className="text-muted mb-0">
+                Aucun utilisateur trouvé.
+              </p>
 
-                {utilisateurs.map(function (utilisateur) {
+            </div>
+          </div>
 
-                  const estAdmin =
-                    utilisateur.role === 'admin'
+        ) : (
 
-                  return (
-                    <tr key={utilisateur._id}>
+          /* Tableau */
+          <div className="card admin-card shadow-sm">
 
-                      <td>
-                        <strong>
-                          {utilisateur.nom}
-                        </strong>
-                      </td>
+            <div className="card-body p-0">
 
-                      <td>
-                        {utilisateur.email}
-                      </td>
+              <div className="table-responsive">
 
-                      <td>
-                        <span className="badge bg-secondary">
-                          {utilisateur.provider}
-                        </span>
-                      </td>
+                <table className="table table-hover align-middle mb-0">
 
-                      <td>
-                        <span
-                          className={
-                            estAdmin
-                              ? 'badge bg-danger'
-                              : 'badge bg-primary'
-                          }
-                        >
-                          {utilisateur.role}
-                        </span>
-                      </td>
+                  <thead>
+                    <tr>
+                      <th className="px-4">
+                        Nom
+                      </th>
 
-                      <td>
+                      <th>
+                        Email
+                      </th>
 
-                        <button
-                          className="btn btn-sm btn-outline-primary me-2"
-                          onClick={() =>
-                            ouvrirModification(utilisateur)
-                          }
-                        >
-                          Modifier
-                        </button>
+                      <th>
+                        Provider
+                      </th>
 
-                        <button
-                          className="btn btn-sm btn-outline-danger"
-                          onClick={() =>
-                            supprimerUtilisateur(utilisateur)
-                          }
-                          disabled={estAdmin}
-                        >
-                          Supprimer
-                        </button>
+                      <th>
+                        Rôle
+                      </th>
 
-                      </td>
-
+                      <th className="text-end px-4">
+                        Actions
+                      </th>
                     </tr>
-                  )
-                })}
+                  </thead>
 
-              </tbody>
+                  <tbody>
 
-            </table>
+                    {utilisateurs.map(function (utilisateur) {
 
+                      const estAdmin =
+                        utilisateur.role === 'admin'
+
+                      return (
+                        <tr key={utilisateur._id}>
+
+                          {/* Nom */}
+                          <td className="px-4">
+                            <strong>
+                              {utilisateur.nom}
+                            </strong>
+                          </td>
+
+                          {/* Email */}
+                          <td>
+                            {utilisateur.email}
+                          </td>
+
+                          {/* Provider */}
+                          <td>
+                            <span className="badge bg-secondary">
+                              {utilisateur.provider || 'local'}
+                            </span>
+                          </td>
+
+                          {/* Rôle */}
+                          <td>
+
+                            <span
+                              className={
+                                estAdmin
+                                  ? 'badge bg-danger'
+                                  : 'badge bg-primary'
+                              }
+                            >
+                              {utilisateur.role}
+                            </span>
+
+                          </td>
+
+                          {/* Actions */}
+                          <td className="text-end px-4">
+
+                            <button
+                              className="btn btn-sm btn-outline-primary me-2"
+                              onClick={() =>
+                                ouvrirModification(
+                                  utilisateur
+                                )
+                              }
+                            >
+                              Modifier
+                            </button>
+
+                            <button
+                              className="btn btn-sm btn-outline-danger"
+                              onClick={() =>
+                                supprimerUtilisateur(
+                                  utilisateur
+                                )
+                              }
+                              disabled={estAdmin}
+                            >
+                              Supprimer
+                            </button>
+
+                          </td>
+
+                        </tr>
+                      )
+                    })}
+
+                  </tbody>
+
+                </table>
+
+              </div>
+            </div>
           </div>
+        )}
 
-        </div>
-      )}
-
+      </div>
     </div>
   )
 }

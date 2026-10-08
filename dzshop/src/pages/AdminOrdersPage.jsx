@@ -84,291 +84,415 @@ export default function AdminOrdersPage() {
 
   if (chargement) {
     return (
-      <div className="container py-5 text-center">
-        <div className="spinner-border" role="status"></div>
+      <div className="admin-orders-page">
+        <div className="container py-5 text-center">
+          <div
+            className="spinner-border text-primary"
+            role="status"
+          >
+            <span className="visually-hidden">
+              Chargement...
+            </span>
+          </div>
 
-        <p className="mt-3">
-          Chargement des commandes...
-        </p>
+          <p className="mt-3 text-muted">
+            Chargement des commandes...
+          </p>
+        </div>
       </div>
     )
   }
 
   return (
-    <div className="container py-5">
+    <div
+      className="admin-orders-page"
+      style={{
+        backgroundColor: '#FAF8F5',
+        minHeight: '100vh'
+      }}
+    >
+      <style>{`
+        .admin-orders-page {
+          color: #142221;
+          font-family: 'Inter', sans-serif;
+        }
 
-      <div className="d-flex justify-content-between align-items-center mb-4">
-        <div>
-          <h1>Gestion des commandes</h1>
+        .admin-orders-page h1,
+        .admin-orders-page h5,
+        .admin-orders-page h6 {
+          font-family: 'Poppins', sans-serif;
+        }
 
-          <p className="text-muted">
-            Liste de toutes les commandes des clients.
-          </p>
+        .admin-orders-page .page-title {
+          color: #142221;
+          font-weight: 800;
+        }
+
+        .admin-orders-page .order-card {
+          border: none;
+          border-radius: 18px;
+          overflow: hidden;
+        }
+
+        .admin-orders-page .order-header {
+          background: #0F3D3E;
+          color: white;
+        }
+
+        .admin-orders-page .status-box {
+          background: #FAF8F5;
+          border-radius: 12px;
+        }
+
+        .admin-orders-page .info-title {
+          color: #0F3D3E;
+          font-weight: 700;
+        }
+
+        .admin-orders-page .table thead th {
+          white-space: nowrap;
+        }
+
+        .admin-orders-page .back-link {
+          color: #6c757d;
+          transition: color 0.15s ease;
+        }
+
+        .admin-orders-page .back-link:hover {
+          color: #E8743B;
+        }
+      `}</style>
+
+      <div className="container py-5">
+
+        {/* Header */}
+        <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+
+          <div>
+            <a
+              href="/admin"
+              className="text-decoration-none back-link"
+            >
+              ← Retour au Dashboard
+            </a>
+
+            <h1 className="page-title mt-2 mb-1">
+              Gestion des commandes
+            </h1>
+
+            <p className="text-muted mb-0">
+              Liste de toutes les commandes des clients.
+            </p>
+          </div>
+
+          <button
+            className="btn btn-outline-primary"
+            onClick={chargerCommandes}
+          >
+            ↻ Actualiser
+          </button>
         </div>
 
-        <button
-          className="btn btn-outline-primary"
-          onClick={chargerCommandes}
-        >
-          Actualiser
-        </button>
-      </div>
+        {/* Erreur */}
+        {erreur && (
+          <div className="alert alert-danger">
+            {erreur}
+          </div>
+        )}
 
-      {erreur && (
-        <div className="alert alert-danger">
-          {erreur}
-        </div>
-      )}
+        {/* Aucune commande */}
+        {commandes.length === 0 ? (
+          <div className="card border-0 shadow-sm">
+            <div className="card-body text-center py-5">
 
-      {commandes.length === 0 ? (
-        <div className="alert alert-info">
-          Aucune commande pour le moment.
-        </div>
-      ) : (
-        <div className="row g-4">
+              <div className="fs-1 mb-3">
+                📦
+              </div>
 
-          {commandes.map(function (commande) {
-            return (
-              <div
-                className="col-12"
-                key={commande._id}
-              >
+              <h5 className="fw-bold">
+                Aucune commande
+              </h5>
 
-                <div className="card shadow-sm">
+              <p className="text-muted mb-0">
+                Aucune commande pour le moment.
+              </p>
 
-                  <div className="card-header d-flex justify-content-between align-items-center">
+            </div>
+          </div>
+        ) : (
 
-                    <div>
-                      <strong>
-                        Commande #{commande._id.slice(-6)}
-                      </strong>
+          /* Liste des commandes */
+          <div className="row g-4">
 
-                      <div className="text-muted small">
-                        {commande.createdAt
-                          ? new Date(commande.createdAt).toLocaleString('fr-DZ')
-                          : ''}
-                      </div>
-                    </div>
+            {commandes.map(function (commande) {
+              const statutActuel =
+                commande.statut || 'En attente'
 
-                    <div className="d-flex align-items-center gap-2">
+              return (
+                <div
+                  className="col-12"
+                  key={commande._id}
+                >
 
-                      <span
-                        className={`badge bg-${couleurStatut(
-                          commande.statut || 'En attente'
-                        )}`}
-                      >
-                        {commande.statut || 'En attente'}
-                      </span>
+                  <div className="card shadow-sm order-card">
 
-                      <span className="badge bg-primary">
-                        {formatPrix(commande.total)}
-                      </span>
+                    {/* Header commande */}
+                    <div className="card-header order-header py-3">
 
-                    </div>
+                      <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
 
-                  </div>
-
-                  <div className="card-body">
-
-                    {/* STATUT DE LA COMMANDE */}
-
-                    <div className="alert alert-light border mb-4">
-
-                      <div className="row align-items-center">
-
-                        <div className="col-md-4">
+                        <div>
                           <strong>
-                            Statut de la commande
+                            Commande #{commande._id.slice(-6)}
                           </strong>
+
+                          <div className="small opacity-75">
+                            {commande.createdAt
+                              ? new Date(
+                                  commande.createdAt
+                                ).toLocaleString('fr-DZ')
+                              : ''}
+                          </div>
                         </div>
 
-                        <div className="col-md-8">
+                        <div className="d-flex align-items-center gap-2">
 
-                          <select
-                            className={`form-select border-${couleurStatut(
-                              commande.statut || 'En attente'
+                          <span
+                            className={`badge bg-${couleurStatut(
+                              statutActuel
                             )}`}
-                            value={commande.statut || 'En attente'}
-                            disabled={modification === commande._id}
-                            onChange={function (event) {
-                              modifierStatut(
-                                commande._id,
-                                event.target.value
-                              )
-                            }}
                           >
+                            {statutActuel}
+                          </span>
 
-                            {statuts.map(function (statut) {
-                              return (
-                                <option
-                                  key={statut}
-                                  value={statut}
-                                >
-                                  {statut}
-                                </option>
-                              )
-                            })}
+                          <span className="badge bg-light text-dark">
+                            {formatPrix(commande.total)}
+                          </span>
 
-                          </select>
+                        </div>
+                      </div>
+                    </div>
 
-                          {modification === commande._id && (
-                            <small className="text-muted">
-                              Modification en cours...
-                            </small>
+                    {/* Body */}
+                    <div className="card-body p-4">
+
+                      {/* Statut */}
+                      <div className="status-box border p-3 mb-4">
+
+                        <div className="row align-items-center">
+
+                          <div className="col-md-4 mb-2 mb-md-0">
+                            <strong>
+                              Statut de la commande
+                            </strong>
+                          </div>
+
+                          <div className="col-md-8">
+
+                            <select
+                              className={`form-select border-${couleurStatut(
+                                statutActuel
+                              )}`}
+                              value={statutActuel}
+                              disabled={
+                                modification === commande._id
+                              }
+                              onChange={function (event) {
+                                modifierStatut(
+                                  commande._id,
+                                  event.target.value
+                                )
+                              }}
+                            >
+                              {statuts.map(function (statut) {
+                                return (
+                                  <option
+                                    key={statut}
+                                    value={statut}
+                                  >
+                                    {statut}
+                                  </option>
+                                )
+                              })}
+                            </select>
+
+                            {modification === commande._id && (
+                              <small className="text-muted">
+                                Modification en cours...
+                              </small>
+                            )}
+
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Informations */}
+                      <div className="row mb-4">
+
+                        {/* Client */}
+                        <div className="col-md-4 mb-4 mb-md-0">
+
+                          <h6 className="info-title mb-3">
+                            Client
+                          </h6>
+
+                          <p className="mb-1">
+                            <strong>
+                              {commande.user?.nom ||
+                                commande.client ||
+                                'Client'}
+                            </strong>
+                          </p>
+
+                          {commande.user?.email && (
+                            <p className="mb-1 text-muted">
+                              {commande.user.email}
+                            </p>
                           )}
+
+                          <p className="mb-0">
+                            📞 {commande.telephone}
+                          </p>
 
                         </div>
 
-                      </div>
+                        {/* Livraison */}
+                        <div className="col-md-4 mb-4 mb-md-0">
 
-                    </div>
+                          <h6 className="info-title mb-3">
+                            Livraison
+                          </h6>
 
-                    <div className="row mb-4">
-
-                      <div className="col-md-4">
-
-                        <h6>Client</h6>
-
-                        <p className="mb-1">
-                          <strong>
-                            {commande.user?.nom ||
-                              commande.client ||
-                              'Client'}
-                          </strong>
-                        </p>
-
-                        {commande.user?.email && (
-                          <p className="mb-1 text-muted">
-                            {commande.user.email}
+                          <p className="mb-1">
+                            <strong>
+                              Wilaya :
+                            </strong>{' '}
+                            {commande.wilaya}
                           </p>
-                        )}
 
-                        <p className="mb-0">
-                          📞 {commande.telephone}
-                        </p>
+                          <p className="mb-1">
+                            <strong>
+                              Commune :
+                            </strong>{' '}
+                            {commande.commune || '-'}
+                          </p>
 
+                          <p className="mb-0">
+                            <strong>
+                              Adresse :
+                            </strong>{' '}
+                            {commande.adresse}
+                          </p>
+
+                        </div>
+
+                        {/* Montant */}
+                        <div className="col-md-4">
+
+                          <h6 className="info-title mb-3">
+                            Montant
+                          </h6>
+
+                          <p className="mb-1">
+                            Sous-total :{' '}
+                            {formatPrix(
+                              commande.sousTotal
+                            )}
+                          </p>
+
+                          <p className="mb-1">
+                            Livraison :{' '}
+                            {commande.livraison === 0
+                              ? 'Gratuite'
+                              : formatPrix(
+                                  commande.livraison
+                                )}
+                          </p>
+
+                          <p className="mb-0">
+                            <strong>
+                              Total :{' '}
+                              {formatPrix(
+                                commande.total
+                              )}
+                            </strong>
+                          </p>
+
+                        </div>
                       </div>
 
-                      <div className="col-md-4">
+                      {/* Produits commandés */}
+                      <h6 className="info-title mb-3">
+                        Produits commandés
+                      </h6>
 
-                        <h6>Livraison</h6>
+                      <div className="table-responsive">
 
-                        <p className="mb-1">
-                          <strong>Wilaya :</strong>{' '}
-                          {commande.wilaya}
-                        </p>
+                        <table className="table table-bordered align-middle">
 
-                        <p className="mb-1">
-                          <strong>Commune :</strong>{' '}
-                          {commande.commune || '-'}
-                        </p>
+                          <thead className="table-light">
+                            <tr>
+                              <th>Produit</th>
+                              <th>Prix</th>
+                              <th>Quantité</th>
+                              <th>Sous-total</th>
+                            </tr>
+                          </thead>
 
-                        <p className="mb-0">
-                          <strong>Adresse :</strong>{' '}
-                          {commande.adresse}
-                        </p>
+                          <tbody>
 
-                      </div>
+                            {commande.articles?.map(
+                              function (article, index) {
+                                return (
+                                  <tr
+                                    key={
+                                      article.produit ||
+                                      index
+                                    }
+                                  >
 
-                      <div className="col-md-4">
+                                    <td>
+                                      {article.nom}
+                                    </td>
 
-                        <h6>Montant</h6>
+                                    <td>
+                                      {formatPrix(
+                                        article.prix
+                                      )}
+                                    </td>
 
-                        <p className="mb-1">
-                          Sous-total :{' '}
-                          {formatPrix(commande.sousTotal)}
-                        </p>
+                                    <td>
+                                      {article.quantite}
+                                    </td>
 
-                        <p className="mb-1">
-                          Livraison :{' '}
-                          {commande.livraison === 0
-                            ? 'Gratuite'
-                            : formatPrix(commande.livraison)}
-                        </p>
+                                    <td>
+                                      {formatPrix(
+                                        article.prix *
+                                          article.quantite
+                                      )}
+                                    </td>
 
-                        <p className="mb-0">
+                                  </tr>
+                                )
+                              }
+                            )}
 
-                          <strong>
-                            Total : {formatPrix(commande.total)}
-                          </strong>
+                          </tbody>
 
-                        </p>
+                        </table>
 
                       </div>
 
                     </div>
-
-                    <h6 className="mb-3">
-                      Produits commandés
-                    </h6>
-
-                    <div className="table-responsive">
-
-                      <table className="table table-bordered align-middle">
-
-                        <thead className="table-light">
-
-                          <tr>
-                            <th>Produit</th>
-                            <th>Prix</th>
-                            <th>Quantité</th>
-                            <th>Sous-total</th>
-                          </tr>
-
-                        </thead>
-
-                        <tbody>
-
-                          {commande.articles?.map(
-                            function (article, index) {
-                              return (
-                                <tr
-                                  key={
-                                    article.produit || index
-                                  }
-                                >
-
-                                  <td>
-                                    {article.nom}
-                                  </td>
-
-                                  <td>
-                                    {formatPrix(article.prix)}
-                                  </td>
-
-                                  <td>
-                                    {article.quantite}
-                                  </td>
-
-                                  <td>
-                                    {formatPrix(
-                                      article.prix *
-                                      article.quantite
-                                    )}
-                                  </td>
-
-                                </tr>
-                              )
-                            }
-                          )}
-
-                        </tbody>
-
-                      </table>
-
-                    </div>
-
                   </div>
 
                 </div>
+              )
+            })}
 
-              </div>
-            )
-          })}
-
-        </div>
-      )}
-
+          </div>
+        )}
+      </div>
     </div>
   )
 }

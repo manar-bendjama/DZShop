@@ -26,9 +26,14 @@ router.post('/', authMiddleware, async function (req, res) {
       })
     }
 
-    const wilayaChoisie = wilayas.find(function (w) {
-      return w.code === String(wilaya).trim()
-    })
+    const valeurWilaya = String(wilaya).trim()
+
+const wilayaChoisie = wilayas.find(function (w) {
+  return (
+    w.code === valeurWilaya ||
+    `${w.code} - ${w.nom}` === valeurWilaya
+  )
+})
 
     if (!wilayaChoisie) {
       return res.status(400).json({

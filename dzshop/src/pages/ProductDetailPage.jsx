@@ -1,125 +1,182 @@
-import { useParams, Link } from 'react-router-dom'
-import { useContext, useState } from 'react'
-import { useApi } from '../hooks/useApi'
-import Chargement from '../components/Chargement'
-import { CartContext } from '../context/CartContext'
+import { useParams, Link } from "react-router-dom";
+import { useContext, useState } from "react";
+import { useApi } from "../hooks/useApi";
+import Chargement from "../components/Chargement";
+import { CartContext } from "../context/CartContext";
 
 function ProductDetailPage() {
+  const { id } = useParams();
 
-  const { id } = useParams()
+  const { addToCart } = useContext(CartContext);
 
-  const { addToCart } = useContext(CartContext)
+  const [ajoute, setAjoute] = useState(false);
 
-  const [ajoute, setAjoute] = useState(false)
-
-  // Le produit vient maintenant de l'API (plus du fichier data/products.js)
-  const { data: produit, chargement, erreur } = useApi('/products/' + id)
+  // Le produit vient de l'API
+  const {
+    data: produit,
+    chargement,
+    erreur,
+  } = useApi("/products/" + id);
 
   if (chargement) {
-    return <Chargement />
+    return <Chargement />;
   }
 
   if (erreur || !produit) {
     return (
-      <p className="container py-5">
-        Produit introuvable
-      </p>
-    )
+      <div className="container py-5">
+        <p className="text-danger">
+          Produit introuvable
+        </p>
+
+        <Link to="/products" className="btn btn-primary">
+          ← Retour aux produits
+        </Link>
+      </div>
+    );
   }
 
   function ajouterAuPanier() {
-    addToCart(produit)
-    setAjoute(true)
+    addToCart(produit);
+    setAjoute(true);
   }
 
   return (
-    <div className="container py-5">
+    <div
+      style={{
+        backgroundColor: "#FAF8F5",
+        minHeight: "100vh",
+      }}
+    >
+      <div className="container py-5">
 
-      <Link
-        className="btn btn-link px-0 mb-3"
-        to="/products"
-      >
-        ← Retour
-      </Link>
+        {/* Retour */}
+        <Link
+          className="btn btn-link px-0 mb-4 text-decoration-none"
+          to="/products"
+          style={{ color: "#0F3D3E" }}
+        >
+          ← Retour aux produits
+        </Link>
 
-      <div className="row">
+        <div className="row g-5 align-items-center">
 
-
-        <div className="col-md-6 text-center">
-          <img
-            src={produit.image}
-            alt={produit.nom}
-            className="img-fluid"
-            style={{
-              height: "400px",
-              width: "100%",
-              objectFit: "contain",
-              padding: "20px"
-            }}
-          />
-        </div>
-
-
-        <div className="col-md-6">
-
-          <h1>
-            {produit.nom}
-          </h1>
-
-          <p className="text-muted">
-            {produit.categorie}
-          </p>
-
-          <p className="fs-3 text-primary fw-bold">
-            {produit.prix.toLocaleString('fr-DZ')} DZD
-          </p>
-
-          <p>
-            Stock disponible : <strong>
-{produit.stock > 5 && (
-  <p className="text-success fw-bold">
-    🟢 En stock
-  </p>
-)}
-
-{produit.stock > 0 && produit.stock <= 5 && (
-  <p className="text-warning fw-bold">
-    🟠 Plus que quelques unités disponibles
-  </p>
-)}
-
-{produit.stock === 0 && (
-  <p className="text-danger fw-bold">
-    🔴 Rupture de stock
-  </p>
-)}
-</strong>
-          </p>
-
-          <button
-            className="btn btn-primary btn-lg"
-            onClick={ajouterAuPanier}
-            disabled={produit.stock === 0}
-          >
-            🛒 Ajouter au panier
-          </button>
-
-          {ajoute && (
-            <div className="alert alert-success mt-3">
-              ✅ Ajouté au panier !
-              {' '}
-              <Link to="/cart">
-                Voir mon panier
-              </Link>
+          {/* Image */}
+          <div className="col-md-6">
+            <div
+              className="bg-white rounded-4 shadow-sm d-flex align-items-center justify-content-center"
+              style={{
+                minHeight: "450px",
+                border: "1px solid #eeeeee",
+              }}
+            >
+              <img
+                src={produit.image}
+                alt={produit.nom}
+                className="img-fluid"
+                style={{
+                  maxHeight: "400px",
+                  maxWidth: "100%",
+                  objectFit: "contain",
+                  padding: "25px",
+                }}
+              />
             </div>
-          )}
+          </div>
 
+          {/* Informations */}
+          <div className="col-md-6">
+
+            <p
+              className="text-uppercase small fw-bold mb-2"
+              style={{ color: "#E8743B" }}
+            >
+              {produit.categorie}
+            </p>
+
+            <h1
+              className="fw-bold mb-3"
+              style={{
+                fontFamily: "Poppins, sans-serif",
+                color: "#142221",
+              }}
+            >
+              {produit.nom}
+            </h1>
+
+            <p
+              className="fs-2 fw-bold mb-4"
+              style={{ color: "#0F3D3E" }}
+            >
+              {produit.prix.toLocaleString("fr-DZ")} DZD
+            </p>
+
+            {/* Description */}
+            {produit.description && (
+              <div className="mb-4">
+                <h5 className="fw-bold mb-2">
+                  Description
+                </h5>
+
+                <p className="text-muted">
+                  {produit.description}
+                </p>
+              </div>
+            )}
+
+            {/* Stock */}
+            <div className="mb-4">
+
+              {produit.stock > 5 && (
+                <p className="text-success fw-bold mb-0">
+                  🟢 En stock
+                </p>
+              )}
+
+              {produit.stock > 0 && produit.stock <= 5 && (
+                <p className="text-warning fw-bold mb-0">
+                  🟠 Plus que quelques unités disponibles
+                </p>
+              )}
+
+              {produit.stock === 0 && (
+                <p className="text-danger fw-bold mb-0">
+                  🔴 Rupture de stock
+                </p>
+              )}
+
+            </div>
+
+            {/* Bouton */}
+            <button
+              className="btn btn-primary btn-lg px-4"
+              onClick={ajouterAuPanier}
+              disabled={produit.stock === 0}
+            >
+              🛒 Ajouter au panier
+            </button>
+
+            {/* Confirmation */}
+            {ajoute && (
+              <div className="alert alert-success mt-4">
+                <div className="mb-2">
+                  ✅ Produit ajouté au panier !
+                </div>
+
+                <Link
+                  to="/cart"
+                  className="fw-bold"
+                >
+                  Voir mon panier →
+                </Link>
+              </div>
+            )}
+
+          </div>
         </div>
-
       </div>
-
     </div>
-  )
+  );
 }
 
-export default ProductDetailPage
+export default ProductDetailPage;

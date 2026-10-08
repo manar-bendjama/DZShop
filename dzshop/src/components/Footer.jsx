@@ -1,78 +1,93 @@
+import { Link } from "react-router-dom";
 
 function Footer() {
-  
-  const annee = new Date().getFullYear()
+  const annee = new Date().getFullYear();
 
   return (
-    <footer className="bg-dark text-light mt-5 pt-5 pb-3">
+    <footer
+  className="text-light mt-5"
+  style={{ backgroundColor: "#0b0b0b" }}
+>
 
-      <div className="container">
+      {/* Partie principale */}
+      <div className="container py-5">
+        <div className="row g-4">
 
-        <div className="row">
-
-          {/* Logo et description */}
-          <div className="col-md-6 mb-4">
-            <h4 className="fw-bold">
+          {/* DZShop */}
+          <div className="col-lg-5 col-md-6">
+            <h3 className="fw-bold mb-3">
               🛒 DZShop
-            </h4>
+            </h3>
 
-            <p className="text-secondary mb-2">
-              Votre boutique en ligne en Algérie 🇩🇿
+            <p className="text-secondary mb-3">
+              Votre boutique électronique en Algérie 🇩🇿
             </p>
 
-            <p className="text-secondary small mb-0">
-              Achetez facilement vos produits préférés,
-              avec livraison partout en Algérie.
+            <p className="text-secondary small mb-4">
+              Découvrez une sélection de produits électroniques de qualité
+              et profitez d'une livraison partout en Algérie.
             </p>
+
+            <div className="d-flex flex-wrap gap-2">
+              <span className="badge bg-secondary px-3 py-2">
+                🇩🇿 Livraison en Algérie
+              </span>
+
+              <span className="badge bg-secondary px-3 py-2">
+                🚚 Livraison rapide
+              </span>
+            </div>
           </div>
 
-          {/* Informations */}
-          <div className="col-md-3 mb-4">
-            <h6 className="fw-bold mb-3">
+          {/* Navigation */}
+          <div className="col-6 col-lg-3 col-md-3">
+            <h6 className="fw-bold text-uppercase mb-3">
               Navigation
             </h6>
 
-            <ul className="list-unstyled">
-              <li className="mb-2">
-                <a
-                  href="/"
+            <ul className="list-unstyled mb-0">
+
+              <li className="mb-3">
+                <Link
+                  to="/"
                   className="text-secondary text-decoration-none"
                 >
-                   Accueil
-                </a>
+                  Accueil
+                </Link>
               </li>
 
-              <li className="mb-2">
-                <a
-                  href="/products"
+              <li className="mb-3">
+                <Link
+                  to="/products"
                   className="text-secondary text-decoration-none"
                 >
-                   Produits
-                </a>
+                  Produits
+                </Link>
               </li>
 
               <li>
-                <a
-                  href="/cart"
+                <Link
+                  to="/cart"
                   className="text-secondary text-decoration-none"
                 >
                   🛒 Panier
-                </a>
+                </Link>
               </li>
+
             </ul>
           </div>
 
           {/* Contact */}
-          <div className="col-md-3 mb-4">
-            <h6 className="fw-bold mb-3">
+          <div className="col-6 col-lg-4 col-md-3">
+            <h6 className="fw-bold text-uppercase mb-3">
               Contact
             </h6>
 
-            <p className="text-secondary small mb-2">
+            <p className="text-secondary small mb-3">
               📍 Skikda, Algérie
             </p>
 
-            <p className="text-secondary small mb-2">
+            <p className="text-secondary small mb-3">
               📞 +213 XX XX XX XX
             </p>
 
@@ -82,27 +97,38 @@ function Footer() {
           </div>
 
         </div>
+      </div>
 
-        <hr className="border-secondary" />
+      {/* Séparation */}
+     <div
+  className="border-top"
+  style={{ borderColor: "#2a2a2a" }}
+>
+        <div className="container">
 
-        {/* Copyright */}
-        <div className="text-center pt-2">
+          <div className="row align-items-center py-3">
 
-          <p className="text-secondary small mb-0">
-            🛒 DZShop — Skikda, Algérie
-          </p>
+            {/* Copyright */}
+            <div className="col-md-6 text-center text-md-start">
+              <p className="text-secondary small mb-0">
+                © {annee} DZShop — Tous droits réservés
+              </p>
+            </div>
 
-          <p className="text-secondary small mb-0 mt-1">
-            © {annee} — Tous droits réservés
-          </p>
+            {/* Localisation */}
+            <div className="col-md-6 text-center text-md-end mt-2 mt-md-0">
+              <p className="text-secondary small mb-0">
+                🛒 DZShop — Skikda, Algérie
+              </p>
+            </div>
+
+          </div>
 
         </div>
-
       </div>
 
     </footer>
-  )
+  );
 }
 
-export default Footer
-
+export default Footer;

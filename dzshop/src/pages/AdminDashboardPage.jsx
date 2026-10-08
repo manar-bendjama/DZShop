@@ -100,8 +100,7 @@ function AdminDashboardPage() {
       }}
     >
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;500;600&display=swap');
-
+       
         .admin-dashboard h1,
         .admin-dashboard h2,
         .admin-dashboard h5 {

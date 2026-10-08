@@ -29,6 +29,7 @@ function GoogleSignInButton(props) {
           size: 'large',
           text: 'continue_with',
           width: 320,
+          locale : 'fr',
         })
       }
 

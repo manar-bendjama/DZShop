@@ -83,3 +83,37 @@ a:hover {
 .text-primary {
   color: var(--brand-dark) !important;
 }
+/* ==============================
+   Navbar DZShop
+   ============================== */
+
+.navbar-link {
+  transition: color 0.2s ease;
+}
+
+.navbar-link:hover,
+.navbar-link:focus {
+  color: #0F3D3E !important;
+}
+
+/* Logo */
+.navbar-brand {
+  transition: color 0.2s ease;
+}
+
+.navbar-brand:hover {
+  color: #E8743B !important;
+}
+
+/* Buttons */
+.navbar-button {
+  transition: all 0.2s ease;
+}
+
+.navbar-button:hover,
+.navbar-button:focus {
+  background-color: #0F3D3E !important;
+  border-color: #0F3D3E !important;
+  color: #fff !important;
+}
+

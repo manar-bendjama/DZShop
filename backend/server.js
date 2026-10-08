@@ -40,7 +40,7 @@ mongoose.connect(process.env.MONGO_URI)
   .then(function () {
     console.log('MongoDB connecté')
     app.listen(PORT, function () {
-      console.log('Serveur sur http://localhost:' + PORT);
+      console.log('Serveur sur le port ' + PORT);
     });
   })
   .catch(function (error) {

@@ -1,9 +1,11 @@
+import mongoose from 'mongoose'
 import express from 'express'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 import { OAuth2Client } from 'google-auth-library'
 import User from '../Models/userModel.js'
 import authMiddleware from '../Middlware/authMiddleware.js'
+import adminMiddleware from '../Middlware/adminMiddleware.js'
 
 const router = express.Router()
 const googleClient = new OAuth2Client()
@@ -180,6 +182,108 @@ router.get('/me', authMiddleware, async function (req, res) {
     })
   } catch (error) {
     res.status(500).json({ message: error.message })
+  }
+})
+
+// TOUS LES UTILISATEURS → GET /api/auth/users (admin)
+router.get('/users', authMiddleware, adminMiddleware, async function (req, res) {
+  try {
+    const utilisateurs = await User.find()
+      .select('-password')
+      .sort({ nom: 1 })
+
+    res.json(utilisateurs)
+  } catch (error) {
+    res.status(500).json({
+      message: error.message
+    })
+  }
+})
+
+// MODIFIER UN UTILISATEUR → PUT /api/auth/users/:id (admin)
+router.put('/users/:id', authMiddleware, adminMiddleware, async function (req, res) {
+  try {
+    if (!mongoose.isValidObjectId(req.params.id)) {
+      return res.status(404).json({
+        message: 'Utilisateur introuvable'
+      })
+    }
+
+    const utilisateur = await User.findById(req.params.id)
+
+    if (!utilisateur) {
+      return res.status(404).json({
+        message: 'Utilisateur introuvable'
+      })
+    }
+
+    if (req.body.nom !== undefined) {
+      utilisateur.nom = req.body.nom
+    }
+
+    if (req.body.email !== undefined) {
+      utilisateur.email = String(req.body.email).toLowerCase().trim()
+    }
+
+    if (req.body.role !== undefined) {
+      if (!['user', 'admin'].includes(req.body.role)) {
+        return res.status(400).json({
+          message: 'Rôle invalide'
+        })
+      }
+
+      utilisateur.role = req.body.role
+    }
+
+    await utilisateur.save()
+
+    res.json({
+      message: 'Utilisateur modifié avec succès',
+      user: {
+        id: utilisateur._id,
+        nom: utilisateur.nom,
+        email: utilisateur.email,
+        provider: utilisateur.provider,
+        role: utilisateur.role
+      }
+    })
+  } catch (error) {
+    res.status(400).json({
+      message: error.message
+    })
+  }
+})
+
+// SUPPRIMER UN UTILISATEUR → DELETE /api/auth/users/:id (admin)
+router.delete('/users/:id', authMiddleware, adminMiddleware, async function (req, res) {
+  try {
+    if (!mongoose.isValidObjectId(req.params.id)) {
+      return res.status(404).json({
+        message: 'Utilisateur introuvable'
+      })
+    }
+
+    if (String(req.params.id) === String(req.user.id)) {
+      return res.status(400).json({
+        message: 'Vous ne pouvez pas supprimer votre propre compte admin'
+      })
+    }
+
+    const utilisateur = await User.findByIdAndDelete(req.params.id)
+
+    if (!utilisateur) {
+      return res.status(404).json({
+        message: 'Utilisateur introuvable'
+      })
+    }
+
+    res.json({
+      message: 'Utilisateur supprimé avec succès'
+    })
+  } catch (error) {
+    res.status(500).json({
+      message: error.message
+    })
   }
 })
 

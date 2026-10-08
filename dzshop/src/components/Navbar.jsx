@@ -16,6 +16,13 @@ function Navbar() {
         <div className="navbar-nav me-auto">
           <Link className="nav-link" to="/">Accueil</Link>
           <Link className="nav-link" to="/products">Produits</Link>
+         {user?.role === 'admin' && (
+        <li className="nav-item">
+        <Link className="nav-link" to="/admin">
+        Admin Dashboard
+        </Link>
+        </li>
+)}
         </div>
 
         <Link className="btn btn-outline-light position-relative me-2" to="/cart">
@@ -37,14 +44,23 @@ function Navbar() {
             >
               👤 {user.nom}
             </button>
-
             <ul className="dropdown-menu dropdown-menu-end">
-              <li>
-                <button className="dropdown-item" onClick={logout}>
-                  Déconnexion
-                </button>
-              </li>
-            </ul>
+  <li>
+    <Link className="dropdown-item" to="/orders">
+      Mes commandes
+    </Link>
+  </li>
+
+  <li>
+    <hr className="dropdown-divider" />
+  </li>
+
+  <li>
+    <button className="dropdown-item" onClick={logout}>
+      Déconnexion
+    </button>
+  </li>
+</ul>
           </div>
         )}
       </div>
